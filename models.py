@@ -7,8 +7,6 @@ class Player:
     name: str
     wow_class: str
     dkp: float = 0.0
-    dkp_gained: float = 0.0
-    dkp_spent: float = 0.0
 
 
 @dataclass

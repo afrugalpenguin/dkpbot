@@ -29,6 +29,20 @@ async def set_upload_channel(interaction: discord.Interaction, channel: discord.
     await interaction.response.send_message(f"Upload channel set to {channel.mention}", ephemeral=True)
 
 
+@config_group.command(name="roster", description="Set which CLM roster to use")
+@app_commands.describe(name="The roster name from your CLM export")
+async def set_roster(interaction: discord.Interaction, name: str):
+    if not is_admin(interaction):
+        await interaction.response.send_message("You don't have permission to do that.", ephemeral=True)
+        return
+    guild_id = interaction.guild_id
+    if guild_id not in interaction.client.guild_configs:
+        interaction.client.guild_configs[guild_id] = {}
+    interaction.client.guild_configs[guild_id]["roster_name"] = name
+    interaction.client.save_configs()
+    await interaction.response.send_message(f"Roster set to **{name}**", ephemeral=True)
+
+
 @config_group.command(name="admin_role", description="Set the admin role for bot management")
 @app_commands.describe(role="The role that can manage the bot")
 async def set_admin_role(interaction: discord.Interaction, role: discord.Role):
@@ -66,7 +80,8 @@ class AdminCog(commands.Cog):
             try:
                 raw = await attachment.read()
                 raw_text = raw.decode("utf-8")
-                players, loot, history = parse_clm_export(raw_text)
+                roster_name = self.bot.guild_configs.get(guild_id, {}).get("roster_name")
+                players, loot, history = parse_clm_export(raw_text, roster_name=roster_name)
                 self.bot.ensure_store(guild_id).load_data(players, loot, history)
                 self.bot.save_store(guild_id)
                 store = self.bot.guild_stores[guild_id]

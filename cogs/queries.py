@@ -237,6 +237,7 @@ async def dkpbot_help(interaction: discord.Interaction):
         name="/dkp config",
         value=(
             "`/dkp config upload_channel #channel` — Set upload channel\n"
+            "`/dkp config roster Inept` — Set CLM roster name\n"
             "`/dkp config admin_role @role` — Set admin role"
         ),
         inline=False,
