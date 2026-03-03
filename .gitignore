@@ -1,0 +1,23 @@
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Claude
+.claude/
+CLAUDE.md
+
+# Build artifacts
+luacheck.exe
+*.zip
+
+# Lua
+.luarocks/
+lua_modules/
