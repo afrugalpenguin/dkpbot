@@ -152,6 +152,32 @@ async def raidloot(interaction: discord.Interaction, date: str = None):
         await interaction.response.send_message(embed=embeds[0], view=view)
 
 
+@dkp_group.command(name="tokens", description="Show DKP standings for your token group")
+@app_commands.describe(wow_class="Your WoW class")
+async def tokens(interaction: discord.Interaction, wow_class: str):
+    store = get_store(interaction)
+    if not store or not store.players:
+        await interaction.response.send_message("No DKP data loaded yet.", ephemeral=True)
+        return
+
+    group_name, rival_players = store.get_token_rivals(wow_class)
+    if group_name is None:
+        await interaction.response.send_message(
+            f"Unknown class '{wow_class}'. Valid classes: Druid, Hunter, Mage, "
+            "Paladin, Priest, Rogue, Shaman, Warlock, Warrior.", ephemeral=True)
+        return
+    if not rival_players:
+        await interaction.response.send_message("No players found for that token group.", ephemeral=True)
+        return
+
+    embed = format_standings_embed(
+        rival_players,
+        title=f"{group_name} — Token Rivals",
+        updated_at=store.updated_at,
+    )
+    await interaction.response.send_message(embed=embed)
+
+
 @dkp_group.command(name="help", description="Show DKPBot commands and usage")
 async def dkpbot_help(interaction: discord.Interaction):
     embed = discord.Embed(
@@ -195,6 +221,11 @@ async def dkpbot_help(interaction: discord.Interaction):
             "`/dkp raidloot` — Most recent raid\n"
             "`/dkp raidloot date:2026-03-01` — Specific date"
         ),
+        inline=False,
+    )
+    embed.add_field(
+        name="/dkp tokens",
+        value="`/dkp tokens wow_class:Hunter` — DKP standings for your token group",
         inline=False,
     )
     embed.add_field(

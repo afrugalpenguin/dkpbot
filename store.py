@@ -49,6 +49,24 @@ class GuildStore:
         query_lower = item_query.lower()
         return [e for e in self.loot if query_lower in e.item_name.lower()]
 
+    TOKEN_GROUPS = {
+        "Fallen Hero": ["Hunter", "Mage", "Warlock"],
+        "Fallen Champion": ["Paladin", "Rogue", "Shaman"],
+        "Fallen Defender": ["Druid", "Priest", "Warrior"],
+    }
+
+    def get_token_rivals(self, wow_class: str) -> tuple[Optional[str], list[Player]]:
+        """Return (token_group_name, rivals) for the given class."""
+        wow_class_title = wow_class.strip().title()
+        for group_name, classes in self.TOKEN_GROUPS.items():
+            if wow_class_title in classes:
+                rivals = sorted(
+                    [p for p in self.players if p.wow_class in classes],
+                    key=lambda p: p.dkp, reverse=True,
+                )
+                return group_name, rivals
+        return None, []
+
     def get_raid_loot(self, date: Optional[datetime] = None) -> list[LootEntry]:
         if not self.loot:
             return []
