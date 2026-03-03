@@ -1,0 +1,22 @@
+{
+    "metadata": {
+        "addon": "ClassicLootManager",
+        "export_date": "2026-03-01T21:00:00",
+        "guild": "The Fellowship",
+        "server": "Faerlina"
+    },
+    "standings": [
+        {"name": "Legolas", "class": "Hunter", "dkp": 150.0, "gained": 500.0, "spent": 350.0},
+        {"name": "Gandalf", "class": "Mage", "dkp": 200.0, "gained": 400.0, "spent": 200.0},
+        {"name": "Aragorn", "class": "Warrior", "dkp": 175.0, "gained": 300.0, "spent": 125.0}
+    ],
+    "loot": [
+        {"player": "Legolas", "class": "Hunter", "item_id": 30311, "item_name": "Warp Slicer", "cost": 100.0, "timestamp": "2026-03-01T20:30:00"},
+        {"player": "Gandalf", "class": "Mage", "item_id": 30310, "item_name": "Staff of Disintegration", "cost": 150.0, "timestamp": "2026-03-01T20:45:00"}
+    ],
+    "history": [
+        {"player": "Legolas", "class": "Hunter", "change": 25.0, "reason": "Void Reaver Kill", "awarded_by": "Gandalf", "timestamp": "2026-03-01T21:00:00"},
+        {"player": "Gandalf", "class": "Mage", "change": 25.0, "reason": "Void Reaver Kill", "awarded_by": "Gandalf", "timestamp": "2026-03-01T21:00:00"},
+        {"player": "Aragorn", "class": "Warrior", "change": -50.0, "reason": "Decay", "awarded_by": "System", "timestamp": "2026-03-01T22:00:00"}
+    ]
+}
