@@ -37,5 +37,7 @@ config.ini
 .env.local
 
 # Data files
+data/
 *.pkl
 *.pickle
+CLMExport.json
