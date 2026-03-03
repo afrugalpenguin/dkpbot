@@ -27,10 +27,26 @@ def class_color(wow_class: str) -> int:
 def format_standings_embed(players: list[Player], title: str = "DKP Standings",
                            updated_at: Optional[datetime] = None) -> discord.Embed:
     embed = discord.Embed(title=title, color=0x5865F2)
-    lines = []
-    for i, p in enumerate(players, 1):
-        lines.append(f"**{i}.** {p.name} ({p.wow_class}) — **{p.dkp:.0f}** DKP")
-    embed.description = "\n".join(lines) if lines else "No data available."
+    if not players:
+        embed.description = "No data available."
+        return embed
+
+    mid = (len(players) + 1) // 2
+    left = players[:mid]
+    right = players[mid:]
+
+    left_lines = []
+    for i, p in enumerate(left, 1):
+        left_lines.append(f"**{i}.** {p.name} ({p.wow_class}) — **{p.dkp:.0f}**")
+
+    right_lines = []
+    for i, p in enumerate(right, mid + 1):
+        right_lines.append(f"**{i}.** {p.name} ({p.wow_class}) — **{p.dkp:.0f}**")
+
+    embed.add_field(name="Rank", value="\n".join(left_lines), inline=True)
+    if right_lines:
+        embed.add_field(name="\u200b", value="\n".join(right_lines), inline=True)
+
     if updated_at:
         embed.set_footer(text=f"Last updated: {updated_at:%Y-%m-%d %H:%M}")
     return embed

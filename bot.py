@@ -16,6 +16,8 @@ class DKPBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.message_content = True
+        intents.messages = True
+        intents.guilds = True
         super().__init__(command_prefix="!", intents=intents)
         self.guild_stores: dict[int, GuildStore] = {}
         self.guild_configs: dict[int, dict] = {}
@@ -23,11 +25,18 @@ class DKPBot(commands.Bot):
     async def setup_hook(self):
         self.load_configs()
         self.load_all_stores()
-        await self.load_extension("cogs.admin")
         await self.load_extension("cogs.queries")
-        await self.tree.sync()
+        await self.load_extension("cogs.admin")
 
     async def on_ready(self):
+        # Clear stale commands (both global and per-guild), then re-sync fresh
+        # 1. Clear stale global commands from Discord
+        await self.tree.sync()  # sync current tree globally (will be overridden per-guild)
+        # 2. Per-guild: clear stale, copy fresh, sync
+        for guild in self.guilds:
+            self.tree.clear_commands(guild=guild)
+            self.tree.copy_global_to(guild=guild)
+            await self.tree.sync(guild=guild)
         print(f"DKPBot online as {self.user} (ID: {self.user.id})")
         print(f"Serving {len(self.guilds)} guild(s)")
 
@@ -75,6 +84,14 @@ bot = DKPBot()
 @bot.listen("on_guild_join")
 async def on_guild_join(guild: discord.Guild):
     bot.ensure_store(guild.id)
+
+
+@bot.listen("on_message")
+async def debug_on_message(message: discord.Message):
+    if message.author.bot:
+        return
+    print(f"[DEBUG] Message from {message.author} in #{message.channel} "
+          f"(id={message.channel.id}), attachments={len(message.attachments)}")
 
 
 if __name__ == "__main__":

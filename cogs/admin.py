@@ -3,45 +3,49 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from parser.clm_parser import parse_clm_export, CLMParseError
+from cogs.queries import dkp_group
+
+config_group = app_commands.Group(name="config", description="Bot configuration", parent=dkp_group)
+
+
+def is_admin(interaction: discord.Interaction) -> bool:
+    admin_role_id = interaction.client.guild_configs.get(interaction.guild_id, {}).get("admin_role_id")
+    if admin_role_id:
+        return any(r.id == admin_role_id for r in interaction.user.roles)
+    return interaction.user.guild_permissions.administrator
+
+
+@config_group.command(name="upload_channel", description="Set the channel for DKP data uploads")
+@app_commands.describe(channel="The channel to watch for CLM export uploads")
+async def set_upload_channel(interaction: discord.Interaction, channel: discord.TextChannel):
+    if not is_admin(interaction):
+        await interaction.response.send_message("You don't have permission to do that.", ephemeral=True)
+        return
+    guild_id = interaction.guild_id
+    if guild_id not in interaction.client.guild_configs:
+        interaction.client.guild_configs[guild_id] = {}
+    interaction.client.guild_configs[guild_id]["upload_channel_id"] = channel.id
+    interaction.client.save_configs()
+    await interaction.response.send_message(f"Upload channel set to {channel.mention}", ephemeral=True)
+
+
+@config_group.command(name="admin_role", description="Set the admin role for bot management")
+@app_commands.describe(role="The role that can manage the bot")
+async def set_admin_role(interaction: discord.Interaction, role: discord.Role):
+    if not is_admin(interaction):
+        await interaction.response.send_message("You don't have permission to do that.", ephemeral=True)
+        return
+    guild_id = interaction.guild_id
+    if guild_id not in interaction.client.guild_configs:
+        interaction.client.guild_configs[guild_id] = {}
+    interaction.client.guild_configs[guild_id]["admin_role_id"] = role.id
+    interaction.client.save_configs()
+    await interaction.response.send_message(f"Admin role set to {role.mention}", ephemeral=True)
 
 
 class AdminCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-
-    def is_admin(self, interaction: discord.Interaction) -> bool:
-        admin_role_id = self.bot.guild_configs.get(interaction.guild_id, {}).get("admin_role_id")
-        if admin_role_id:
-            return any(r.id == admin_role_id for r in interaction.user.roles)
-        return interaction.user.guild_permissions.administrator
-
-    config_group = app_commands.Group(name="config", description="Bot configuration")
-
-    @config_group.command(name="upload_channel", description="Set the channel for DKP data uploads")
-    @app_commands.describe(channel="The channel to watch for CLM export uploads")
-    async def set_upload_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        if not self.is_admin(interaction):
-            await interaction.response.send_message("You don't have permission to do that.", ephemeral=True)
-            return
-        guild_id = interaction.guild_id
-        if guild_id not in self.bot.guild_configs:
-            self.bot.guild_configs[guild_id] = {}
-        self.bot.guild_configs[guild_id]["upload_channel_id"] = channel.id
-        self.bot.save_configs()
-        await interaction.response.send_message(f"Upload channel set to {channel.mention}", ephemeral=True)
-
-    @config_group.command(name="admin_role", description="Set the admin role for bot management")
-    @app_commands.describe(role="The role that can manage the bot")
-    async def set_admin_role(self, interaction: discord.Interaction, role: discord.Role):
-        if not self.is_admin(interaction):
-            await interaction.response.send_message("You don't have permission to do that.", ephemeral=True)
-            return
-        guild_id = interaction.guild_id
-        if guild_id not in self.bot.guild_configs:
-            self.bot.guild_configs[guild_id] = {}
-        self.bot.guild_configs[guild_id]["admin_role_id"] = role.id
-        self.bot.save_configs()
-        await interaction.response.send_message(f"Admin role set to {role.mention}", ephemeral=True)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

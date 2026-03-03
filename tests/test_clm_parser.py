@@ -13,18 +13,18 @@ def load_fixture():
 
 def test_parse_returns_players_loot_history():
     players, loot, history = parse_clm_export(load_fixture())
-    assert len(players) == 3
-    assert len(loot) == 2
-    assert len(history) == 3
+    assert len(players) == 25
+    assert len(loot) == 15
+    assert len(history) == 30
 
 
 def test_parse_player_fields():
     players, _, _ = parse_clm_export(load_fixture())
     legolas = next(p for p in players if p.name == "Legolas")
     assert legolas.wow_class == "Hunter"
-    assert legolas.dkp == 150.0
-    assert legolas.dkp_gained == 500.0
-    assert legolas.dkp_spent == 350.0
+    assert legolas.dkp == 240.0
+    assert legolas.dkp_gained == 740.0
+    assert legolas.dkp_spent == 500.0
 
 
 def test_parse_loot_fields():
@@ -32,12 +32,12 @@ def test_parse_loot_fields():
     entry = next(e for e in loot if e.item_name == "Warp Slicer")
     assert entry.player_name == "Legolas"
     assert entry.item_id == 30311
-    assert entry.dkp_cost == 100.0
+    assert entry.dkp_cost == 80.0
 
 
 def test_parse_history_fields():
     _, _, history = parse_clm_export(load_fixture())
-    entry = next(e for e in history if e.player_name == "Aragorn")
+    entry = next(e for e in history if e.player_name == "Eviscerate")
     assert entry.dkp_change == -50.0
     assert entry.reason == "Decay"
 
