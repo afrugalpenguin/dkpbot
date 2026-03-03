@@ -119,7 +119,6 @@ class AdminCog(commands.Cog):
                     self.bot.save_configs()
 
                 self.bot.ensure_store(guild_id).load_data(players, loot, history)
-                self.bot.save_store(guild_id)
                 store = self.bot.guild_stores[guild_id]
                 await message.reply(
                     f"DKP data updated — **{len(store.players)}** players, "
