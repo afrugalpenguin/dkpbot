@@ -14,10 +14,28 @@ Desktop.ini
 .claude/
 CLAUDE.md
 
-# Build artifacts
-luacheck.exe
-*.zip
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
 
-# Lua
-.luarocks/
-lua_modules/
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Config with secrets
+*.ini
+!default.ini
+config.ini
+.env.local
+
+# Data files
+*.pkl
+*.pickle
