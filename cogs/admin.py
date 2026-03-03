@@ -43,6 +43,19 @@ async def set_roster(interaction: discord.Interaction, name: str):
     await interaction.response.send_message(f"Roster set to **{name}**", ephemeral=True)
 
 
+@config_group.command(name="force_upload", description="Allow the next upload to bypass player count validation")
+async def force_upload(interaction: discord.Interaction):
+    if not is_admin(interaction):
+        await interaction.response.send_message("You don't have permission to do that.", ephemeral=True)
+        return
+    guild_id = interaction.guild_id
+    if guild_id not in interaction.client.guild_configs:
+        interaction.client.guild_configs[guild_id] = {}
+    interaction.client.guild_configs[guild_id]["force_next_upload"] = True
+    interaction.client.save_configs()
+    await interaction.response.send_message("Next upload will bypass validation.", ephemeral=True)
+
+
 @config_group.command(name="admin_role", description="Set the admin role for bot management")
 @app_commands.describe(role="The role that can manage the bot")
 async def set_admin_role(interaction: discord.Interaction, role: discord.Role):
@@ -82,6 +95,29 @@ class AdminCog(commands.Cog):
                 raw_text = raw.decode("utf-8")
                 roster_name = self.bot.guild_configs.get(guild_id, {}).get("roster_name")
                 players, loot, history = parse_clm_export(raw_text, roster_name=roster_name)
+
+                if not players:
+                    await message.reply("Upload rejected — export contains no players.")
+                    continue
+
+                force = self.bot.guild_configs.get(guild_id, {}).get("force_next_upload", False)
+                existing_store = self.bot.guild_stores.get(guild_id)
+                if not force and existing_store and existing_store.players:
+                    old_count = len(existing_store.players)
+                    new_count = len(players)
+                    if new_count < old_count * 0.5:
+                        await message.reply(
+                            f"Upload rejected — new data has **{new_count}** players "
+                            f"but current data has **{old_count}**. "
+                            f"This looks like a bad export. If intentional, "
+                            f"use `/dkp config force_upload` first."
+                        )
+                        continue
+
+                if force:
+                    self.bot.guild_configs[guild_id]["force_next_upload"] = False
+                    self.bot.save_configs()
+
                 self.bot.ensure_store(guild_id).load_data(players, loot, history)
                 self.bot.save_store(guild_id)
                 store = self.bot.guild_stores[guild_id]
