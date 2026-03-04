@@ -2,7 +2,6 @@
 
 [![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Lint](https://github.com/afrugalpenguin/dkpbot/actions/workflows/lint.yml/badge.svg)](https://github.com/afrugalpenguin/dkpbot/actions/workflows/lint.yml)
-[![Downloads](https://img.shields.io/github/downloads/afrugalpenguin/dkpbot/total?logo=github)](https://github.com/afrugalpenguin/dkpbot/releases)
 
 A Discord bot for [Classic Loot Manager](https://www.curseforge.com/wow/addons/classic-loot-manager) (CLM) DKP tracking. Upload your CLM JSON export and your guild can query DKP standings, loot history, and token competition right from Discord.
 
