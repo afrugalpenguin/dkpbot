@@ -1,5 +1,4 @@
 import discord
-from typing import Any
 
 
 def paginate_list(items: list, per_page: int = 10) -> list[list]:
