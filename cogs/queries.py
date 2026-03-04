@@ -30,7 +30,7 @@ async def standings(interaction: discord.Interaction, player: str = None,
             return
         embed = format_standings_embed([p], title=f"DKP — {p.name}",
                                        updated_at=store.updated_at)
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
     elif wow_class:
         players = store.get_players_by_class(wow_class)
         if not players:
@@ -38,12 +38,12 @@ async def standings(interaction: discord.Interaction, player: str = None,
             return
         embed = format_standings_embed(players, title=f"DKP — {wow_class}",
                                        updated_at=store.updated_at)
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
     else:
         all_standings = store.get_standings()
         embed = format_standings_embed(all_standings, title="DKP Standings",
                                        updated_at=store.updated_at)
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 @dkp_group.command(name="loot", description="View loot history")
@@ -64,10 +64,10 @@ async def loot(interaction: discord.Interaction, player: str = None):
     embeds = [format_loot_embed(page, title=title, updated_at=store.updated_at)
               for page in pages_data]
     if len(embeds) == 1:
-        await interaction.response.send_message(embed=embeds[0])
+        await interaction.response.send_message(embed=embeds[0], ephemeral=True)
     else:
         view = PaginationView(embeds)
-        await interaction.response.send_message(embed=embeds[0], view=view)
+        await interaction.response.send_message(embed=embeds[0], view=view, ephemeral=True)
 
 
 @dkp_group.command(name="history", description="View DKP transaction history")
@@ -88,10 +88,10 @@ async def history(interaction: discord.Interaction, player: str = None):
     embeds = [format_history_embed(page, title=title, updated_at=store.updated_at)
               for page in pages_data]
     if len(embeds) == 1:
-        await interaction.response.send_message(embed=embeds[0])
+        await interaction.response.send_message(embed=embeds[0], ephemeral=True)
     else:
         view = PaginationView(embeds)
-        await interaction.response.send_message(embed=embeds[0], view=view)
+        await interaction.response.send_message(embed=embeds[0], view=view, ephemeral=True)
 
 
 @dkp_group.command(name="item", description="Search loot records by item name")
@@ -111,10 +111,10 @@ async def item(interaction: discord.Interaction, name: str):
     embeds = [format_loot_embed(page, title=f"Item Search — {name}",
                                  updated_at=store.updated_at) for page in pages_data]
     if len(embeds) == 1:
-        await interaction.response.send_message(embed=embeds[0])
+        await interaction.response.send_message(embed=embeds[0], ephemeral=True)
     else:
         view = PaginationView(embeds)
-        await interaction.response.send_message(embed=embeds[0], view=view)
+        await interaction.response.send_message(embed=embeds[0], view=view, ephemeral=True)
 
 
 @dkp_group.command(name="raidloot", description="View loot from a specific raid")
@@ -146,10 +146,10 @@ async def raidloot(interaction: discord.Interaction, date: str = None):
     embeds = [format_loot_embed(page, title=title, updated_at=store.updated_at)
               for page in pages_data]
     if len(embeds) == 1:
-        await interaction.response.send_message(embed=embeds[0])
+        await interaction.response.send_message(embed=embeds[0], ephemeral=True)
     else:
         view = PaginationView(embeds)
-        await interaction.response.send_message(embed=embeds[0], view=view)
+        await interaction.response.send_message(embed=embeds[0], view=view, ephemeral=True)
 
 
 @dkp_group.command(name="tokens", description="Show DKP standings for your token group")
@@ -243,7 +243,7 @@ async def dkpbot_help(interaction: discord.Interaction):
         inline=False,
     )
     embed.set_footer(text="Data is updated when a DKP manager uploads a CLM export.")
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 async def setup(bot: commands.Bot):
